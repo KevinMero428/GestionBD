@@ -1,83 +1,448 @@
+-- TABLAS
 /*==============================================================*/
-/* Table: CITAS                                                 */
+/* Table: PACIENTE                                              */
 /*==============================================================*/
-create table CITAS (
-   IDCITAS               int                 not null,
-   ID_PACIENTE           int	         	   null,
-   ID_DOCTOR             int        		   null,
-   CITA_FECHA	      	date                null,
-   CITA_HORA            time                null,
-   
-   constraint PK_CITAS primary key (IDCITAS)
-);
+CREATE TABLE paciente 
+  ( 
+     id                   SERIAL PRIMARY KEY NOT NULL, 
+     nombre               VARCHAR(50) NOT NULL, 
+     apellido             VARCHAR(50) NOT NULL, 
+     fecha_nacimiento     DATE NOT NULL, 
+     cedula               VARCHAR(10) NOT NULL, 
+     estatura             VARCHAR(10) NOT NULL, 
+     email                VARCHAR(50) NOT NULL 
+  ); 
 
-/*==============================================================*/
-/* Table: CONSULTAS                                             */
-/*==============================================================*/
-create table CONSULTAS (
-   IDCONSULTAS           int                 not null,
-   ID_PACIENTE           int	         	   null,
-   ID_DOCTOR             int		            null,
-   CONSULTAS_MOTIVO		 varchar(50)		      null,
-   constraint PK_CONSULTAS primary key (IDCONSULTAS)
-);
 
 /*==============================================================*/
 /* Table: DOCTOR                                              */
 /*==============================================================*/
-create table DOCTOR (
-   IDDOCTOR             int                  not null,
-   DOCTOR_NOMBRE        varchar(50)          null,
-   DOCTOR_APELLIDOS     varchar(50)          null,
-   DOCTOR_CELL       	varchar(10)          null,
-   DOCTOR_CORREO        varchar(50)          null,
-   DOCTOR_ESPECIALIDAD 	varchar(50)          null,
-   constraint PK_DOCTOR primary key (IDDOCTOR)
-);
+CREATE TABLE doctor 
+  ( 
+     id           SERIAL PRIMARY KEY NOT NULL, 
+     nombre       VARCHAR(50) NOT NULL, 
+     apellidos    VARCHAR(50) NOT NULL, 
+     celular      VARCHAR(10) NOT NULL, 
+     correo       VARCHAR(50) NOT NULL, 
+     especialidad VARCHAR(50) NOT NULL 
+  ); 
+
 
 /*==============================================================*/
-/* Table: PACIENTE                                              */
+/* Table: CITAS                                                 */
 /*==============================================================*/
-create table PACIENTE (
-   IDPACIENTE                   	int                 not null,
-   PACIENTE_NOMBRE              	varchar(50)         null,
-   PACIENTE_APELLIDO            	varchar(50) 	    null,
-   PACIENTE_FECHA_NACIMIENTO    	date        	    null,
-   PACIENTE_CEDULA       			varchar(10)         null,
-   PACIENTE_NUM_HISTORIA_CLINICA 	varchar(10)         null,
-   PACIENTE_TALLA			        varchar(10)			null,
-   PACIENTE_EMAIL				    varchar(50)         null,
-   
-   constraint PK_PACIENTE primary key (IDPACIENTE)
-);
+CREATE TABLE citas 
+  ( 
+     id          SERIAL PRIMARY KEY NOT NULL, 
+     id_paciente INT NULL, 
+     id_doctor   INT NULL, 
+     fecha  DATE NULL, 
+     hora   TIME NULL, 
+     CONSTRAINT fk_cita_paciente FOREIGN KEY (id_paciente) REFERENCES paciente(id), 
+     CONSTRAINT fk_cita_doctor FOREIGN KEY (id_doctor) REFERENCES doctor(id) 
+  ); 
+
+
+/*==============================================================*/
+/* Table: CONSULTAS                                             */
+/*==============================================================*/
+CREATE TABLE consultas 
+  ( 
+     id               SERIAL PRIMARY KEY NOT NULL, 
+     id_cita      INT NULL, 
+     consultas_motivo VARCHAR(50) NULL, 
+     CONSTRAINT fk_consulta_cita FOREIGN KEY (id_cita) REFERENCES citas(id)
+  ); 
+
+
 
 /*==============================================================*/
 /* Table: ECOGRAFÍAS                                              */
 /*==============================================================*/
-create table ECO (
-   IDECOS               int                not null,
-   ID_PACIENTE          int		           not null,
-   ID_DOCTOR            int		           not null,
-   ECO_DENSIDAD         varchar(50)        null,
-   ECO_GLUCOSA          varchar(50)        null,
-   ECO_NITRITOS         varchar(50)        null,
-   ECO_EDAD_GESTACIONAL varchar(10)        null,
-   
-   constraint PK_ECOS primary key (IDECOS, ID_PACIENTE, ID_DOCTOR )
-);
+CREATE TABLE eco 
+  ( 
+     id               SERIAL PRIMARY KEY NOT NULL, 
+     id_cita         INT NOT NULL, 
+     densidad         VARCHAR(50) NOT NULL, 
+     glucosa          VARCHAR(50) NOT NULL, 
+     nitritos         VARCHAR(50) NOT NULL, 
+     edad_gestacional VARCHAR(10) NOT NULL, 
+     CONSTRAINT fk_eco_cita FOREIGN KEY (id_cita) REFERENCES citas(id)
+  ); 
 
 /*==============================================================*/
 /* Table: PARTO                                              */
 /*==============================================================*/
-create table PARTO (
-   IDPARTO              int                 not null,
-   ID_PACIENTE          int		            not null,
-   ID_DOCTOR            int		            null,
-   PARTO_FECHA          date        	    null,
-   PARTO_TIPO           varchar(50)         null,
-   PARTO_PESO       	varchar(50)         not null,
-   PARTO_TALLA		    varchar(50)	        not null,
-   PARTO_SEXO           varchar(20)         null,
-   PARTO_NOMBRE     	varchar(50)         null,
-   constraint PK_PARTO primary key (IDPARTO,ID_PACIENTE)
-);
+CREATE TABLE parto 
+  ( 
+     id          SERIAL PRIMARY KEY, 
+     id_cita     INT NOT NULL, 
+     tipo        VARCHAR(50) NOT NULL, 
+     peso        VARCHAR(50) NOT NULL, 
+     estatura    VARCHAR(50) NOT NULL, 
+     sexo        VARCHAR(20) NOT NULL, 
+     nombre      VARCHAR(50) NOT NULL, 
+     CONSTRAINT fk_parto_cita FOREIGN KEY (id_cita) REFERENCES citas(id) 
+  ); 
+
+-- datos
+--paciente
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('MARIA', 'MERO','01/01/2020', '1321544001', '1.68','maria@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('MARTA', 'GOMEZ','01/05/2020', '1254688774', '1.68','marta@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('JULIA', 'LOPEZ','01/01/1994', '1355568995', '1.70','julia@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('SELENA', 'LOPEZ','01/02/1995', '169885478', '1.70','selena@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('GABRIELA', 'LUZ', '12/06/1995', '1478955448', '1.70','gabriela@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('SILVIA', 'VERA','01/03/1996', '1445126655', '1.70','silvia@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('LUISA', 'LUZ','2/04/1996', '1556662232', '1.70','luisa@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('CECILIA', 'PAZ','01/04/1985', '8974545132', '1.70','cecilia@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('KARINA', 'SANCHEZ','05/03/1996', '6598445551', '1.80', 'karina@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('LUZ', 'CLARA','01/04/1985', '669544555', '1.70','luz@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('LORENA', 'PILL','01/04/1985', '1254788996', '1.70','lorena@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('GENESIS', 'SANCHEZ','05/03/1996', '3669988554', '1.80', 'genesis@gmail.com');
+
+insert into PACIENTE(nombre, apellido, fecha_nacimiento, cedula, estatura, email) 
+VALUES ('MARITZA', 'MERO','01/04/1985', '4554884445', '1.70','maritza@gmail.com');
+
+
+-- doctor
+
+
+insert into DOCTOR(nombre, apellidos, celular, correo, especialidad) 
+VALUES ('ROBERTO', 'GONZALES','0945226565', 'roberto@gmail.com','Medicina general');
+insert into DOCTOR(nombre, apellidos, celular, correo, especialidad) 
+VALUES ('JULIO', 'KIWI','0988996655', 'julio@gmail.com','Medicina Fetal – Maternal');
+insert into DOCTOR(nombre, apellidos, celular, correo, especialidad) 
+VALUES ('DIANA', 'VERA','0988774422', 'diana@gmail.com','Ginecologia');
+insert into DOCTOR(nombre, apellidos, celular, correo, especialidad) 
+VALUES ('TATIANA', 'CAMPO','0935896100', 'tatiana@gmail.com','Psicologia');
+
+
+-- citas
+
+	 
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 1, '12/12/2020', '08:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (2, 1, '12/12/2020', '08:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (3, 1, '12/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (4, 2, '12/12/2020', '08:00:00');
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (5, 2, '11/12/2020', '10:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (6, 3, '11/12/2020', '12:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (7, 3, '11/12/2020', '15:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (8, 4, '11/12/2020', '08:00:00');
+
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (9, 4, '10/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (10, 4, '10/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (2, 4, '10/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 4, '10/12/2020', '15:00:00');
+	 
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (9, 3, '10/12/2020', '16:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 3, '10/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (2, 4, '10/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (6, 4, '10/12/2020', '15:00:00');
+
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (4, 2, '12/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (10, 2, '12/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (3, 4, '12/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 4, '12/12/2020', '15:00:00');
+	 
+	 
+	 
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (10, 4, '10/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (5, 2, '9/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (7, 3, '9/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (6, 3, '9/12/2020', '15:00:00');
+
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (9, 2, '9/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (8, 1, '9/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (3, 1, '9/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 2, '9/12/2020', '15:00:00');
+
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (6, 4, '2/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (1, 1, '2/12/2020', '14:30:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (4, 4, '2/12/2020', '09:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (3, 1, '1/12/2020', '15:00:00');
+
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (11, 2, '1/12/2020', '15:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (12, 2, '12/12/2020', '15:00:00');
+insert into CITAS(id_paciente, id_doctor, fecha, hora) 
+VALUES (13, 2, '12/12/2020', '15:00:00');
+
+
+ 
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (1, 'DOLOR DE GARGANTA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (2, 'DOLOR ESTOMACAL');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (3, 'FIEBRE');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (4, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (5, 'INFECCION');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (6, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (7, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (8, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (9, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (10, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (11, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (12, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (13, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (14, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (15, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (16, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (17, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (18, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (19, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (20, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (21, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (22, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (23, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (24, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (25, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (26, 'FIEBRE Y ESCALOFRIOS');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (27, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (28, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (29, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (30, 'Revision rutinaria');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (31, 'TERAPIA');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (32, 'TOS Y GRIPE');
+
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (33, 'PARTO');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (34, 'PARTO');
+insert into consultas(id_cita, consultas_motivo) 
+VALUES (35, 'PARTO');
+
+
+
+-- eco
+	 
+insert into eco(id_cita, densidad, glucosa, nitritos, edad_gestacional) 
+VALUES (4, '< 4', '82 mg/dl', '18', '5 semanas');
+
+insert into eco(id_cita, densidad, glucosa, nitritos, edad_gestacional) 
+VALUES (17, '< 4', '95 mg/dl', '18', '10 semanas');
+
+insert into eco(id_cita, densidad, glucosa, nitritos, edad_gestacional) 
+VALUES (18, '< 4', '87 mg/dl', '18', '6 semanas');
+
+insert into eco(id_cita, densidad, glucosa, nitritos, edad_gestacional) 
+VALUES (25, '< 4', '100 mg/dl', '18', '8 semanas');
+
+insert into eco(id_cita, densidad, glucosa, nitritos, edad_gestacional) 
+VALUES (28, '< 4', '92 mg/dl', '18', '15 semanas');
+
+
+-- parto
+
+insert into parto(id_cita, tipo, peso, estatura, sexo, nombre) 
+VALUES (33, 'CESAREA', '3.400 gramos', '53,5 cm', 'MASCULINO', 'JULIAN');
+
+insert into parto(id_cita, tipo, peso, estatura, sexo, nombre) 
+VALUES (34, 'NORMAL', '3.000 gramos', '43,5 cm', 'MASCULINO', 'HERMAN');
+
+insert into parto(id_cita, tipo, peso, estatura, sexo, nombre) 
+VALUES (35, 'CESAREA', '2.800 gramos', '49,5 cm', 'FEMENINO', 'VIOLETA');
+
+
+
+-- CONSULTAS
+
+
+-- 1. citas totales mensuales por doctores, mostrando datos de pacientes y datos de la cita
+
+-- 2. informacion de las personas que han tenido parto ya se cesarea o normal en todo el mes
+
+-- 3. de TODOS los pacientes que se hayan realizado una ecografica:
+		-- muestre TODOS los datos de los  pacientes
+		-- muestre TODOS los datos de la ecografia
+
+-- 4. Muestre los pacientes que han sido atendidos por los siguientes sintomas
+	-- PARTO
+	-- DOLOR ESTOMACAL
+	-- TERAPIA
+	-- y muestre el doctor que los atendio junto con la fecha y hora
+
+
+
+
+
+
+-- 1. citas totales mensuales por doctores, mostrando datos de pacientes y datos de la cita
+
+select 
+citas.id as ID, 
+paciente.cedula as Cedula_paciente, 
+paciente.nombre as Nombre_paciente, 
+paciente.apellido as Apellido_paciente, 
+citas.fecha as fecha_cita, 
+citas.hora as hora_cita, 
+doctor.nombre as nombre_doctor, 
+doctor.apellidos as apellido_doctor, 
+doctor.especialidad as especialidad_doctor
+from citas 
+INNER JOIN 
+DOCTOR 
+ON doctor.id = citas.id_doctor
+INNER JOIN
+PACIENTE 
+ON paciente.id = citas.id_paciente
+where 
+(citas.id_doctor = 1) AND (citas.fecha BETWEEN  '2020-12-01' AND '2020-12-31')
+
+
+-- 2. informacion de las personas que han tenido parto ya se cesarea o normal en todo el mes
+
+select 
+paciente.nombre as nombre_paciente,
+paciente.apellido as apellido_paciente,
+paciente.fecha_nacimiento as fecha_nacimiento_paciente,
+paciente.email as correo_paciente,
+citas.fecha as fecha_parto,
+parto.tipo as tipo_parto
+from parto 
+INNER JOIN 
+CITAS ON citas.id = parto.id_cita
+INNER JOIN 
+PACIENTE ON paciente.id = citas.id_paciente
+where (parto.tipo = 'CESAREA') OR (parto.tipo = 'NORMAL') 
+AND (citas.fecha BETWEEN  '2020-12-01' AND '2020-12-31')
+
+
+-- 3. de TODOS los pacientes que se hayan realizado una ecografica:
+		-- muestre TODOS los datos de los  pacientes
+		-- muestre TODOS los datos de la ecografia
+
+select 
+paciente.*,
+eco.*
+from eco
+INNER JOIN 
+CITAS ON citas.id = eco.id_cita
+INNER JOIN 
+PACIENTE ON paciente.id = citas.id_paciente
+
+
+
+-- 4. Muestre los pacientes que han sido atendidos por los siguientes sintomas
+	-- PARTO
+	-- DOLOR ESTOMACAL
+	-- TERAPIA
+	-- y muestre el doctor que los atendio junto con la fecha y hora
+	
+select 
+paciente.cedula as Cedula_paciente, 
+paciente.nombre as Nombre_paciente, 
+paciente.apellido as Apellido_paciente, 
+consultas.consultas_motivo,
+citas.fecha as fecha_cita, 
+citas.hora as hora_cita, 
+doctor.nombre as nombre_doctor, 
+doctor.apellidos as apellido_doctor
+from consultas 
+INNER JOIN 
+CITAS 
+ON citas.id = consultas.id_cita
+INNER JOIN
+PACIENTE
+ON paciente.id = citas.id_paciente
+INNER JOIN 
+DOCTOR
+ON doctor.id = citas.id_doctor
+WHERE 
+(consultas.consultas_motivo = 'PARTO')
+OR
+(consultas.consultas_motivo = 'DOLOR ESTOMACAL')
+OR
+(consultas.consultas_motivo = 'TERAPIA');
